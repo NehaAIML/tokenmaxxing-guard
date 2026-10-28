@@ -33,7 +33,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 0
 
     summary = summarize(read_events(args.log))
-    print(json.dumps(summary, indent=2) if args.json else render(summary))
+    print(json.dumps(summary, indent=2, default=str) if args.json else render(summary))
     return 0
 
 

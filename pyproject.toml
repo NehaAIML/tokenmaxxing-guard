@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tokenmaxxing-guard"
-version = "0.2.0"
+version = "0.2.1"
 description = "Unified FinOps and SecOps guardrails for AI agents: budgets, least-privilege scopes and an audit trail in one control point."
 readme = "README.md"
 license = { text = "MIT" }

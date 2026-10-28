@@ -7,25 +7,33 @@ provider's current price list via a policy file before trusting any dollar figur
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Dict, Optional
+
+from .money import MILLION, to_decimal
 
 
 @dataclass(frozen=True)
 class ModelTier:
     name: str
-    input_per_mtok: float
-    output_per_mtok: float
+    input_per_mtok: Decimal
+    output_per_mtok: Decimal
 
-    def cost(self, input_tokens: int, output_tokens: int) -> float:
+    def __post_init__(self) -> None:
+        # accept int/float/str for convenience, store exact Decimals
+        object.__setattr__(self, "input_per_mtok", to_decimal(self.input_per_mtok))
+        object.__setattr__(self, "output_per_mtok", to_decimal(self.output_per_mtok))
+
+    def cost(self, input_tokens: int, output_tokens: int) -> Decimal:
         return (
-            input_tokens / 1_000_000 * self.input_per_mtok
-            + output_tokens / 1_000_000 * self.output_per_mtok
-        )
+            Decimal(input_tokens) * self.input_per_mtok
+            + Decimal(output_tokens) * self.output_per_mtok
+        ) / MILLION
 
 
 DEFAULT_TIERS: Dict[str, ModelTier] = {
-    "small": ModelTier("small", 0.10, 0.50),
-    "frontier": ModelTier("frontier", 5.00, 25.00),
+    "small": ModelTier("small", Decimal("0.10"), Decimal("0.50")),
+    "frontier": ModelTier("frontier", Decimal("5.00"), Decimal("25.00")),
 }
 
 DEFAULT_ROUTES: Dict[str, str] = {
@@ -55,9 +63,9 @@ class Router:
         """Unknown task types fall back to default_tier (fail-safe: capable, not cheap)."""
         return self.tiers[self.routes.get(task_type, self.default_tier)]
 
-    def estimate_cost(self, task_type: str, input_tokens: int, output_tokens: int) -> float:
+    def estimate_cost(self, task_type: str, input_tokens: int, output_tokens: int) -> Decimal:
         return self.route(task_type).cost(input_tokens, output_tokens)
 
-    def baseline_cost(self, input_tokens: int, output_tokens: int) -> float:
+    def baseline_cost(self, input_tokens: int, output_tokens: int) -> Decimal:
         """What this call would cost on the most expensive tier. Used to report routing savings."""
         return max(t.cost(input_tokens, output_tokens) for t in self.tiers.values())

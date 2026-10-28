@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Tuple, Union
 
 from .identity import AgentRegistry
+from .money import to_decimal
 from .router import ModelTier, Router
 
 
@@ -15,7 +16,9 @@ def load_policy(path: Union[str, Path]) -> Tuple[AgentRegistry, Router]:
     defaults = data.get("defaults", {})
 
     tiers = {
-        name: ModelTier(name, spec["input_per_mtok"], spec["output_per_mtok"])
+        name: ModelTier(
+            name, to_decimal(spec["input_per_mtok"]), to_decimal(spec["output_per_mtok"])
+        )
         for name, spec in data.get("models", {}).items()
     } or None
     router = Router(
@@ -34,5 +37,6 @@ def load_policy(path: Union[str, Path]) -> Tuple[AgentRegistry, Router]:
             max_input_tokens=merged.get("max_input_tokens", 32_000),
             max_calls_per_minute=merged.get("max_calls_per_minute", 60),
             quarantine_after_denials=merged.get("quarantine_after_denials", 5),
+            quarantine_window_seconds=merged.get("quarantine_window_seconds", 600),
         )
     return registry, router

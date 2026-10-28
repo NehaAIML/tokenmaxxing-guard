@@ -6,7 +6,7 @@ from .ledger import AuditLog, read_events
 from .models import Decision, Verdict
 from .router import ModelTier, Router
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 __all__ = [
     "AgentRecord",

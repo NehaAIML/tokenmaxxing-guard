@@ -1,0 +1,25 @@
+{
+  "defaults": {
+    "max_input_tokens": 32000,
+    "max_calls_per_minute": 60,
+    "quarantine_after_denials": 5,
+    "quarantine_window_seconds": 600
+  },
+  "models": {
+    "small":    { "input_per_mtok": 0.10, "output_per_mtok": 0.50 },
+    "frontier": { "input_per_mtok": 5.00, "output_per_mtok": 25.00 }
+  },
+  "routes": {
+    "classify": "small",
+    "summarize": "small",
+    "refactor": "small",
+    "architecture": "frontier",
+    "debug_complex": "frontier"
+  },
+  "default_tier": "frontier",
+  "agents": {
+    "code-review-bot": { "allowed_tools": ["read_file", "list_files"], "budget_usd": 5.00 },
+    "release-bot":     { "allowed_tools": ["read_file", "create_tag"],  "budget_usd": 2.00,
+                         "max_calls_per_minute": 10 }
+  }
+}

@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from enum import Enum
 from typing import Optional
+
+from .money import ZERO
 
 
 class Decision(str, Enum):
@@ -12,7 +15,7 @@ class Decision(str, Enum):
 
     ALLOW = "ALLOW"
     BLOCK_IDENTITY = "BLOCK_IDENTITY"  # agent is not registered
-    BLOCK_QUARANTINE = "BLOCK_QUARANTINE"  # agent was auto-quarantined after repeated violations
+    BLOCK_QUARANTINE = "BLOCK_QUARANTINE"  # auto-quarantined after repeated violations
     BLOCK_SCOPE = "BLOCK_SCOPE"  # tool is outside the agent's least-privilege scope
     BLOCK_CONTEXT = "BLOCK_CONTEXT"  # input context exceeds the per-call token cap
     BLOCK_RATE = "BLOCK_RATE"  # too many calls in the sliding window
@@ -28,7 +31,7 @@ class Verdict:
     agent_id: str
     tool: str
     tier: Optional[str] = None
-    cost_usd: float = 0.0
+    cost_usd: Decimal = ZERO
     call_id: Optional[str] = None
 
     @property

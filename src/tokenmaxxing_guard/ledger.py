@@ -3,13 +3,20 @@
 from __future__ import annotations
 
 import json
+import os
 import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 
 class AuditLog:
-    """In-memory event list with optional JSON Lines persistence."""
+    """In-memory event list with optional JSON Lines persistence.
+
+    Each event is written as ONE ``write`` on an ``O_APPEND`` descriptor, so independent
+    writers (threads, or processes on the same local filesystem) cannot interleave
+    partial lines. This is not a substitute for a real log pipeline: ship the file to
+    write-once storage or a SIEM in production.
+    """
 
     def __init__(self, path: Optional[Union[str, Path]] = None) -> None:
         self.path = Path(path) if path else None
@@ -20,8 +27,12 @@ class AuditLog:
         with self._lock:
             self.events.append(event)
             if self.path:
-                with self.path.open("a", encoding="utf-8") as fh:
-                    fh.write(json.dumps(event, sort_keys=True) + "\n")
+                line = (json.dumps(event, sort_keys=True) + "\n").encode("utf-8")
+                fd = os.open(self.path, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o640)
+                try:
+                    os.write(fd, line)
+                finally:
+                    os.close(fd)
 
 
 def read_events(path: Union[str, Path]) -> List[Dict[str, Any]]:

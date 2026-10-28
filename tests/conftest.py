@@ -25,9 +25,10 @@ def guard(clock):
     g.register(
         "reader",
         ["read_file"],
-        budget_usd=1.00,
+        budget_usd="1.00",
         max_input_tokens=10_000,
         max_calls_per_minute=5,
         quarantine_after_denials=3,
+        quarantine_window_seconds=600,
     )
     return g
