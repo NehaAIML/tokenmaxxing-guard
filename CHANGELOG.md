@@ -7,6 +7,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 ## [0.2.1]
 
+### Fixed
+- Restored the `LICENSE` file, which was accidentally deleted in the v0.2.1 commit.
+- Fixed the `mypy` configuration to be portable across different folder names.
+- Added `tests/test_repo_hygiene.py` to fail if `LICENSE` is missing or Markdown links break.
+
 ### Security
 - **Quarantine evasion fixed.** 0.2.0 counted a consecutive streak that reset on every allowed call, so an agent alternating one legal and one illegal call was never quarantined. Violations are now counted in a sliding window (`quarantine_after_denials` within `quarantine_window_seconds`, default 5 in 600 s).
 
