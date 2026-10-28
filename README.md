@@ -67,21 +67,6 @@ Prices are illustrative. 'blocked' = what blocked calls WOULD have cost (counter
 > This block is generated from the real code (`python scripts/update_readme.py`) and a test fails if it goes stale.
 
 ---
-
-## 🏗️ Architecture
-
-```mermaid
-flowchart LR
-    A[Agent] -->|check| G{{Guard}}
-    G --- I[identity<br/>SecOps]
-    G --- R[router<br/>FinOps]
-    G -->|Verdict| A
-    G --> L[(audit.jsonl)]
-    L --> D[dashboard / report]
-    A -->|if ALLOW| M[Model or Tool]
-    M -->|real usage| S[settle]
-    S --> L
-```
 ## 🏗️ Architecture
 
 ```mermaid
