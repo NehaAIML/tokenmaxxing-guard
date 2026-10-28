@@ -82,6 +82,41 @@ flowchart LR
     M -->|real usage| S[settle]
     S --> L
 ```
+## 🏗️ Architecture
+
+```mermaid
+flowchart LR
+    A[Agent] -->|check| G{{Guard}}
+    G --- I[identity<br/>SecOps]
+    G --- R[router<br/>FinOps]
+    G -->|Verdict| A
+    G --> L[(audit.jsonl)]
+    L --> D[dashboard / report]
+    A -->|if ALLOW| M[Model or Tool]
+    M -->|real usage| S[settle]
+    S --> L
+```
+```mermaid
+flowchart TD
+    S([Call arrives]) --> Q1{Agent registered?}
+    Q1 -- no --> B1[BLOCK_IDENTITY]
+    Q1 -- yes --> Q2{Quarantined?}
+    Q2 -- yes --> B2[BLOCK_QUARANTINE]
+    Q2 -- no --> Q3{Tool in scope?}
+    Q3 -- no --> B3[BLOCK_SCOPE<br/>violation logged in window<br/>quarantine at N in W seconds]
+    Q3 -- yes --> Q4{Input within<br/>context cap?}
+    Q4 -- no --> B4[BLOCK_CONTEXT]
+    Q4 -- yes --> Q5{Under calls/min?}
+    Q5 -- no --> B5[BLOCK_RATE]
+    Q5 -- yes --> Q6{Projected spend<br/>within budget?}
+    Q6 -- no --> B6[BLOCK_BUDGET]
+    Q6 -- yes --> OK[ALLOW<br/>reserve cost,<br/>route to cheapest tier]
+
+    classDef block fill:#fde8e8,stroke:#c0392b,color:#7b1d1d
+    classDef ok fill:#e6f4ea,stroke:#2e7d32,color:#1b4d1f
+    class B1,B2,B3,B4,B5,B6 block
+    class OK ok
+```
 
 Every call runs one pipeline. The first failing check blocks it (**fail closed**), and *every* attempt, allowed or blocked, is written to the audit log:
 
