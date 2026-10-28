@@ -1,55 +1,22 @@
-<div align="center">
-
 # 🛡️ tokenmaxxing-guard
 
-**See an AI agent get blocked in 60 seconds.**
-*Unified FinOps + SecOps guardrails for autonomous agents. No API key needed.*
-
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![No Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)]()
-
-</div>
+**Watch an AI agent get stopped in 60 seconds. No API key, no dependencies.**
+Unified FinOps + SecOps guardrails for autonomous agents: one control point for *what an agent may
+spend* and *what an agent may do*.
 
 ---
 
-## 💸 The Problem
+## The problem
 
-Agents burn tokens in loops, inherit service-account permissions, and the invoice arrives *after* the damage is done. Uber burned its 2026 AI budget by April. Microsoft told engineers to stop "tokenmaxxing" in July. 
+Agents burn tokens in loops, inherit broad service-account permissions, and the invoice arrives
+*after* the damage is done. FinOps watches the bill; SecOps watches the permissions; both are
+reading the same API logs in different languages, so a runaway agent looks like "a cost problem" to
+one team and "an access problem" to the other, and nobody owns it.
 
-The problem is not that engineers use too much AI. The problem is that **FinOps and SecOps are looking at the same API logs and speaking different languages.**
+> **The invoice tells you what happened. This guard decides before it happens.**
 
-> *The invoice tells you what happened. This guard tells you before it happens.*
+## Quickstart
 
----
-
-## 🏗️ The Architecture
-
-Most companies build the cost layer and ignore the security layer. This repo shows why they must be the same layer. 
-
-```text
-       [ PROMPT / TASK ]
-               │
-               ▼
-     ┌───────────────────┐
-     │     guard.py      │ ◄─── The Intersection
-     │ (Unified Control) │
-     └─────────┬─────────┘
-               │
-       ┌───────┴───────┐
-       ▼               ▼
-┌─────────────┐ ┌─────────────┐
-│  router.py  │ │ identity.py │
-│   (FinOps)  │ │  (SecOps)   │
-├─────────────┤ ├─────────────┤
-│ Route cheap │ │ Unique ID   │
-│ Route front │ │ Least priv. │
-│ Save $$$    │ │ Block loops │
-└─────────────┘ └─────────────┘
-       │               │
-       └───────┬───────┘
-               ▼
-     ┌───────────────────┐
-     │   dashboard.py    │ ◄─── Unified View
-     │  (One Dashboard)  │
-     └───────────────────┘
+```bash
+git clone https://github.com/NehaAIML/tokenmaxxing-guard && cd tokenmaxxing-guard
+./demo.sh
